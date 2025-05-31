@@ -1,0 +1,420 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Agentimate - The agent who animates your ideas</title>
+    <script src="js/anime.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-gradient: linear-gradient(135deg, #FF6B6B 0%, #4ECDC4 100%);
+            --bg-gradient: radial-gradient(circle at 50% 50%, #1a1a2e 0%, #16213e 100%);
+            --text-color: #ffffff;
+            --accent-color: #FF6B6B;
+            --navbar-height: 60px;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: #1a1a2e;
+            color: var(--text-color);
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        .navbar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 60px;
+            padding: 0.8rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 100;
+            background: rgba(26, 26, 46, 0.8);
+            backdrop-filter: blur(10px);
+        }
+
+        .logo {
+            font-size: 1.2rem;
+            font-weight: 700;
+            background: var(--primary-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .logo-icon {
+            width: 24px;
+            height: 24px;
+            background: var(--primary-gradient);
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            -webkit-text-fill-color: initial;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 2rem;
+        }
+
+        .nav-links a {
+            color: var(--text-color);
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.3s ease;
+        }
+
+        .nav-links a:hover {
+            color: var(--accent-color);
+        }
+
+        .hero {
+            min-height: 90vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: space-between;
+            padding: calc(var(--navbar-height) + 1rem) 2rem 2rem 2rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero-content {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .hero h1 {
+            font-size: 2.5rem;
+            text-align: center;
+            margin-bottom: 0.5rem;
+            opacity: 1;
+        }
+
+        .hero p {
+            font-size: 1.1rem;
+            text-align: center;
+            max-width: 600px;
+            margin-bottom: 0.5rem;
+            opacity: 1;
+        }
+
+        .start-btn {
+            display: inline-block;
+            padding: 0.6rem 1.2rem;
+            background: var(--primary-gradient);
+            border-radius: 50px;
+            color: white;
+            text-decoration: none;
+            font-weight: 600;
+            margin: 0.5rem 0;
+            transition: transform 0.3s ease;
+            border: none;
+            cursor: pointer;
+            font-size: 0.9rem;
+            opacity: 1;
+        }
+
+        .start-btn:hover {
+            transform: translateY(-2px);
+        }
+
+        .animation-showcase {
+            width: 90%;
+            max-width: 900px;
+            height: 250px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 12px;
+            position: relative;
+            overflow: hidden;
+            margin: 1rem 0;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+        }
+
+        .floating-elements {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+        }
+
+        .element {
+            position: absolute;
+            border-radius: 50%;
+            background: var(--primary-gradient);
+            opacity: 0;
+        }
+
+        .shape {
+            position: absolute;
+            opacity: 0;
+        }
+
+        .text-element {
+            display: none;
+        }
+
+        .cursor {
+            width: 20px;
+            height: 20px;
+            background: #FF6B6B;
+            border-radius: 50%;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 10;
+            box-shadow: 0 0 20px rgba(255, 107, 107, 0.5);
+        }
+
+        .cursor-trail {
+            width: 100%;
+            height: 100%;
+            position: absolute;
+            top: 0;
+            left: 0;
+            pointer-events: none;
+        }
+
+        .design-window {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            padding: 1.2rem;
+            width: 90%;
+            max-width: 700px;
+            margin-top: 1rem;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            opacity: 1;
+        }
+
+        .prompt-input {
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 6px;
+            padding: 0.8rem;
+            width: 100%;
+            color: white;
+            font-size: 0.9rem;
+            margin-bottom: 1rem;
+        }
+
+        .tools-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+            gap: 0.8rem;
+            margin-top: 0.8rem;
+        }
+
+        .tool-item {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 4px;
+            padding: 0.8rem;
+            text-align: center;
+            cursor: pointer;
+            transition: transform 0.3s ease;
+            font-size: 0.8rem;
+        }
+
+        .tool-item:hover {
+            transform: translateY(-5px);
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <div class="logo">
+            <div class="logo-icon">A</div>
+            agentimate
+        </div>
+        <div class="nav-links">
+            <a href="#features">Features</a>
+            <a href="#pricing">Pricing</a>
+            <a href="#about">About</a>
+        </div>
+    </nav>
+
+    <div class="hero">
+        <div class="hero-content">
+            <h1>Idea to design in seconds.</h1>
+            <p>Your superhuman AI design partner. Start creating for free today.</p>
+            <a href="#start" class="start-btn">Start Designing</a>
+        </div>
+
+        <div class="animation-showcase">
+            <div class="floating-elements"></div>
+            <div class="cursor"></div>
+            <div class="cursor-trail"></div>
+        </div>
+
+        <div class="design-window">
+            <input type="text" class="prompt-input" placeholder="Ask Agentimate to create a design..." />
+            <div class="tools-grid">
+                <div class="tool-item">🎨 UI Design</div>
+                <div class="tool-item">✨ Animations</div>
+                <div class="tool-item">📱 Responsive</div>
+                <div class="tool-item">🔄 Iterations</div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Debug function
+        function debug(msg) {
+            console.log(`[Debug] ${msg}`);
+        }
+
+        // Check if anime.js is loaded
+        if (typeof anime === 'undefined') {
+            console.error('anime.js is not loaded! Adding from CDN as fallback...');
+            const script = document.createElement('script');
+            script.src = 'https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js';
+            script.onload = () => {
+                console.log('anime.js loaded from CDN successfully');
+                initializeAnimations();
+            };
+            document.head.appendChild(script);
+        } else {
+            debug('anime.js is loaded successfully');
+            initializeAnimations();
+        }
+
+        function initializeAnimations() {
+            debug('Initializing animations...');
+
+            try {
+                // Create floating elements
+                const floatingContainer = document.querySelector('.floating-elements');
+                if (!floatingContainer) {
+                    throw new Error('Could not find floating-elements container');
+                }
+
+                const colors = ['#FF6B6B', '#4ECDC4', '#FFE66D', '#6C5CE7'];
+                
+                debug('Creating floating elements...');
+                // Create more circles to fill the space (since we removed text)
+                for (let i = 0; i < 30; i++) {
+                    const element = document.createElement('div');
+                    element.className = 'element';
+                    element.style.width = Math.random() * 30 + 10 + 'px';
+                    element.style.height = element.style.width;
+                    element.style.left = Math.random() * 100 + '%';
+                    element.style.top = Math.random() * 100 + '%';
+                    element.style.background = colors[Math.floor(Math.random() * colors.length)];
+                    floatingContainer.appendChild(element);
+                }
+
+                debug('Setting up cursor animation...');
+                // Animate cursor
+                const cursor = document.querySelector('.cursor');
+                if (!cursor) {
+                    throw new Error('Could not find cursor element');
+                }
+
+                let cursorTimeline = anime.timeline({
+                    targets: cursor,
+                    loop: true,
+                    easing: 'easeInOutSine'
+                });
+
+                cursorTimeline
+                    .add({
+                        translateX: -200,
+                        translateY: -100,
+                        duration: 1000
+                    })
+                    .add({
+                        translateX: 200,
+                        translateY: 100,
+                        duration: 1000
+                    })
+                    .add({
+                        translateX: 0,
+                        translateY: 0,
+                        duration: 1000
+                    });
+
+                debug('Animating floating elements...');
+                // Animate floating elements
+                anime({
+                    targets: '.element',
+                    translateX: function() { return anime.random(-50, 50); },
+                    translateY: function() { return anime.random(-50, 50); },
+                    scale: function() { return anime.random(0.2, 1.5); },
+                    opacity: [0, 0.7],
+                    duration: function() { return anime.random(1000, 3000); },
+                    delay: anime.stagger(100),
+                    loop: true,
+                    direction: 'alternate',
+                    easing: 'easeInOutQuad'
+                });
+
+                debug('Setting up cursor trail...');
+                // Create and animate cursor trail
+                const cursorTrail = document.querySelector('.cursor-trail');
+                if (!cursorTrail) {
+                    throw new Error('Could not find cursor-trail element');
+                }
+
+                document.addEventListener('mousemove', (e) => {
+                    const rect = cursorTrail.getBoundingClientRect();
+                    const x = e.clientX - rect.left;
+                    const y = e.clientY - rect.top;
+                    
+                    if (x >= 0 && x <= rect.width && y >= 0 && y <= rect.height) {
+                        const trail = document.createElement('div');
+                        trail.className = 'element';
+                        trail.style.width = '10px';
+                        trail.style.height = '10px';
+                        trail.style.background = colors[Math.floor(Math.random() * colors.length)];
+                        trail.style.position = 'absolute';
+                        trail.style.left = x + 'px';
+                        trail.style.top = y + 'px';
+                        cursorTrail.appendChild(trail);
+
+                        anime({
+                            targets: trail,
+                            opacity: [1, 0],
+                            scale: [1, 0],
+                            duration: 1000,
+                            easing: 'easeOutExpo',
+                            complete: () => {
+                                trail.remove();
+                            }
+                        });
+                    }
+                });
+
+                debug('All animations initialized successfully!');
+            } catch (error) {
+                console.error('Animation initialization error:', error);
+            }
+        }
+
+        // Initialize animations when DOM is ready
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', initializeAnimations);
+        } else {
+            initializeAnimations();
+        }
+    </script>
+</body>
+</html> 
